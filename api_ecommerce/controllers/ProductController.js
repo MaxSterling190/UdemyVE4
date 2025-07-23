@@ -1,5 +1,4 @@
 import models from "../models"
-import token from '../services/token'
 import resource from '../resources'
 
 export default {
@@ -14,25 +13,35 @@ export default {
                 });
                 return;
             }
-            console.log(data);
+            try {
+                if (typeof data.tags === 'string') {
+                    data.tags = JSON.parse(data.tags);
+                    }
+                } catch (error) {
+                console.error('Error al parsear tags:', error);
+                data.tags = [];
+                }
             data.slug = data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            data.price_dollars = Number(data.price_dollars);
+            data.price_soles = Number(data.price_soles);
             if(req.files){
-                var img_path = req.files.imagen.path;
-                var name = img_path.split('\\');
-                var portada_name = name[2];
+                const img_path = req.files.imagen.path;
+                const pathParts = img_path.split('/');
+                const portada_name = pathParts[pathParts.length - 1];
                 data.portada = portada_name;
             }
-            let product = await models.Product.create(data);
-
+            const product = await models.Product.create(data);
             res.status(200).json({
                 message: "EL PRODUCTO SE REGISTRO CON EXITO",
             });
 
         } catch (error) {
+            console.error("Error en el registro:", error);
             res.status(500).send({
-                message: "OCURRIO UN PROBLEMA"
+                message: "COURRIO UN PROBLEMA",
+                error:error.message,
             });
-        }
+        }   
     },
     update: async (req, res) => {
         try {

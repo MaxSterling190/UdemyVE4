@@ -12,7 +12,7 @@ const ProductSchema = new Schema({
     stock: {type: Number, default: 0},
     description: {type: String, required: true},
     resumen: {type: String, required: true},
-    tags: {type: String, required: true},
+    tags: [{type: String, required: true}],
     type_inventario: {type: Number, default: 1},
 },{
     timestamps: true,

@@ -17,7 +17,7 @@ export class AddNewProductComponent implements OnInit {
   categories:any = [];
   categorie:any = "";
   price_soles:any = 0;
-  price_usd:any = 0;
+  price_dollars:any = 0;
   imagen_file:any = null;
   imagen_previzualizacion:any = null;
   description:any = null;
@@ -69,7 +69,7 @@ export class AddNewProductComponent implements OnInit {
     this.tags.splice(i, 1);
   }
   save(){
-    if(!this.title || !this.sku || !this.categorie || !this.price_soles || !this.price_usd || !this.resumen || this.tags.length == 0 || !this.imagen_file){ 
+    if(!this.title || !this.sku || !this.categorie || !this.price_soles || !this.price_dollars || !this.resumen || this.tags.length == 0 || !this.imagen_file){ 
       this.toaster.open(NoticyAlertComponent, {text: `danger-'Upps! NECESITAS DIGITAR TODOS LOS CAMPOS DEL FORMULARIO.'`});
       return;
     }
@@ -78,15 +78,11 @@ export class AddNewProductComponent implements OnInit {
     formData.append("sku", this.sku);
     formData.append("categorie", this.categorie);
     formData.append("price_soles", this.price_soles);
-    formData.append("price_usd", this.price_usd);
+    formData.append("price_dollars", this.price_dollars);
     formData.append("imagen", this.imagen_file);
     formData.append("description", this.description);
     formData.append("resumen", this.resumen);
     formData.append("tags", JSON.stringify(this.tags));
-
-    formData.forEach((value, key) => {
-      console.log(key + ':', value);
-    });
 
     this._productService.createProduct(formData).subscribe((resp:any) => {
       console.log(resp);
