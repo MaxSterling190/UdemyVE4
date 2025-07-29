@@ -20,7 +20,7 @@ export default {
                 } catch (error) {
                 console.error('Error al parsear tags:', error);
                 data.tags = [];
-                }
+            }
             data.slug = data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
             data.price_dollars = Number(data.price_dollars);
             data.price_soles = Number(data.price_soles);
@@ -53,6 +53,7 @@ export default {
                     code: 403,
                     message: "EL PRODUCTO YA EXISTE"
                 });
+                return;
             }
             data.slug = data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
             if(req.files && req.files.imagen){

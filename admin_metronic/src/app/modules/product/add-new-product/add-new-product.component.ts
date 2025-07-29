@@ -86,7 +86,23 @@ export class AddNewProductComponent implements OnInit {
 
     this._productService.createProduct(formData).subscribe((resp:any) => {
       console.log(resp);
-
+      if(resp.code == 403){
+        this.toaster.open(NoticyAlertComponent, {text: `danger-'Upps! EL PRODUCTO YA EXISTE, DIGITAR OTRO NOMBRE'`});
+        return;
+      }else{
+        this.toaster.open(NoticyAlertComponent, {text: `primary-'EL PRODUCTO SE REGISTRO CON EXITO'`});
+        this.title = null;
+        this.sku = null;
+        this.categorie = null;
+        this.price_soles = null;
+        this.price_dollars = null;
+        this.imagen_file = null;
+        this.description = null;
+        this.resumen = null;
+        this.tags = [];
+        this.imagen_previzualizacion = null;
+        return;
+      }
     })
   }
 }
