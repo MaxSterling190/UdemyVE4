@@ -16,6 +16,6 @@ router.put("/update",[auth.verifyAdmin,path],productController.update);
 router.get("/list",auth.verifyAdmin,productController.list);
 router.delete("/delete",auth.verifyAdmin,productController.remove);
 
-router.get("/uploads/categorie/:img",productController.obtener_imagen);
+router.get("/uploads/product/:img",productController.obtener_imagen);
 
 export default router;
