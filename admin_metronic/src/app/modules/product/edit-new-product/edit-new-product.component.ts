@@ -121,7 +121,6 @@ export class EditNewProductComponent implements OnInit {
       }
     })
   }
-
   listProducts(){
     this.router.navigateByUrl('/productos/lista-de-todos-los-productos');
   }
