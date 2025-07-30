@@ -14,7 +14,7 @@ const routes: Routes = [{
       component: AddNewProductComponent,
     },
     {
-      path: 'editar-producto/.:id',
+      path: 'editar-producto/:id',
       component: EditNewProductComponent,
     },
     {

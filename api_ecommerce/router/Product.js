@@ -18,4 +18,6 @@ router.delete("/delete",auth.verifyAdmin,productController.remove);
 
 router.get("/uploads/product/:img",productController.obtener_imagen);
 
+router.get("/show/:id",productController.show);
+
 export default router;

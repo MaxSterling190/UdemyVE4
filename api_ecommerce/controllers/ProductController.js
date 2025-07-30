@@ -137,6 +137,20 @@ export default {
             console.log(error);
         }
     },
+    show: async (req, res) => {
+        try {
+            var product_id = req.params.id;
+            let PRODUCT = await models.Product.findById({_id:product_id}).populate('categorie');
+            res.status(200).json({
+                product: resource.Product.product_list(PRODUCT),
+            });
+        } catch (error) {
+            res.status(500).send({
+                message: "OCURRIO UN PROBLEMA"
+            });
+            console.log(error);
+        }
+    },
     register_imagen: async (req, res) => {
         try {
             var img_path = req.files.imagen.path;
