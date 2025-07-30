@@ -1,5 +1,7 @@
 import models from "../models"
 import resource from '../resources'
+import fs from 'fs'
+import path from 'path'
 
 export default {
     register: async (req, res) => {
@@ -78,20 +80,24 @@ export default {
         try {
             var search = req.query.search;
             var categorie = req.query.categorie;
-            let products = await models.Product.find({
-                $or: [
-                    {"title": new RegExp(search, "i")},
-                    {"categorie": new RegExp(search, "i")},
-                ],
-            }).populate('categorie')
+            let query = {};
+
+            if (search) {
+            query.title = new RegExp(search, "i");
+            }
+            if (categorie) {
+            query.categorie = categorie; // debe ser el _id de la categoría
+            }
+            let products = await models.Product.find(query).populate('categorie');
             products = products.map((product) => {
-                return resource.Product.product_list(product);
+            return resource.Product.product_list(product);
             });
 
             res.status(200).json({
                 products: products,
             });
         } catch (error) {
+            console.error('Error al listar productos:', error);
             res.status(500).send({
                 message: "OCURRIO UN PROBLEMA"
             });
@@ -124,6 +130,20 @@ export default {
                     res.status(200).sendFile(path.resolve(path_img));
                 }
             })
+        } catch (error) {
+            res.status(500).send({
+                message: "OCURRIO UN PROBLEMA"
+            });
+            console.log(error);
+        }
+    },
+    show: async (req, res) => {
+        try {
+            var product_id = req.params.id;
+            let PRODUCT = await models.Product.findById({_id:product_id}).populate('categorie');
+            res.status(200).json({
+                product: resource.Product.product_list(PRODUCT),
+            });
         } catch (error) {
             res.status(500).send({
                 message: "OCURRIO UN PROBLEMA"

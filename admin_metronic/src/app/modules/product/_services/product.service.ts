@@ -20,10 +20,18 @@ export class ProductService {
     this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     this.isLoading$ = this.isLoadingSubject.asObservable();
   }
-allPrducts(search='') {
+  allProducts(search='') {
     this.isLoadingSubject.next(true);
     let headers = new HttpHeaders({"token": this.authservice.token});
     let URL = URL_SERVICIOS+'/products/list?search='+search;
+    return this.http.get(URL, {headers: headers}).pipe(
+      finalize(() => this.isLoadingSubject.next(false))
+    );
+  }
+  showProduct(product_id='') {
+    this.isLoadingSubject.next(true);
+    let headers = new HttpHeaders({"token": this.authservice.token});
+    let URL = URL_SERVICIOS+'/products/show/'+product_id;
     return this.http.get(URL, {headers: headers}).pipe(
       finalize(() => this.isLoadingSubject.next(false))
     );
