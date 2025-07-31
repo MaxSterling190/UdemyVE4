@@ -30,6 +30,13 @@ export class EditNewProductComponent implements OnInit {
   tags:any = [];
   
   isLoading$:any;
+  type_inventario:any = 1;
+  stock:any = 0;
+
+  stock_multiple:any = 0;
+  valor_multiple:any = "";
+
+  variedades:any = [];
   constructor(
     public _productService: ProductService,
     public router: Router,
@@ -58,6 +65,8 @@ export class EditNewProductComponent implements OnInit {
       this.description = this.product_selected.description;
       this.resumen = this.product_selected.resumen;
       this.tags = this.product_selected.tags;
+
+      this.type_inventario = this.product_selected.type_inventario;
     })
     this._categorieService.allCategories().subscribe((resp:any) => {
       console.log(resp);
@@ -123,5 +132,26 @@ export class EditNewProductComponent implements OnInit {
   }
   listProducts(){
     this.router.navigateByUrl('/productos/lista-de-todos-los-productos');
+  }
+  checkedInventario(value){
+    this.type_inventario = value;
+  }
+  saveVariedad(){
+    if(!this.valor_multiple || !this.stock_multiple){
+      this.toaster.open(NoticyAlertComponent, {text: `danger-'Upps! ES NECESARIO DIGITAR UN VALOR Y UNA CANTIDAD.'`});
+      return;
+    }
+    let data = {
+      product: this.product_id,
+      valor: this.valor_multiple,
+      stock: this.stock_multiple,
+    }
+    this._productService.createVariedad(data).subscribe((resp:any) => {
+      console.log(resp);
+    })
+  }
+  editVariedad(product){
+  }
+  deleteVariedad(product){
   }
 }

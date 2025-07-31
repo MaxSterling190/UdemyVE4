@@ -1,5 +1,5 @@
 export default { 
-    product_list: (product) => {
+    product_list: (product,variedades = []) => {
         let tags = product.tags;
         if (typeof tags === 'string') {
             try {
@@ -23,6 +23,7 @@ export default {
             tags: tags,
             type_inventario: product.type_inventario,
             state: product.state,
+            variedades: variedades,
         }
     }
 }

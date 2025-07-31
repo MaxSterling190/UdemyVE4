@@ -141,8 +141,10 @@ export default {
         try {
             var product_id = req.params.id;
             let PRODUCT = await models.Product.findById({_id:product_id}).populate('categorie');
+
+            let VARIEDADES = await models.Variedad.find({product: product_id});
             res.status(200).json({
-                product: resource.Product.product_list(PRODUCT),
+                product: resource.Product.product_list(PRODUCT,VARIEDADES),
             });
         } catch (error) {
             res.status(500).send({

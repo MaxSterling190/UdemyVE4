@@ -1,6 +1,8 @@
 import routerx from 'express-promise-router'
 import productController from '../controllers/ProductController'
+import variedadController from '../controllers/VariedadController'
 import auth from '../middlewares/auth'
+
 
 import multiparty from 'connect-multiparty'
 var path = multiparty({uploadDir: './uploads/product'})
@@ -19,5 +21,13 @@ router.delete("/delete",auth.verifyAdmin,productController.remove);
 router.get("/uploads/product/:img",productController.obtener_imagen);
 
 router.get("/show/:id",productController.show);
+
+// VARIEDAD
+
+router.post("/register-variedad",[auth.verifyAdmin,path],variedadController.register);
+router.put("/update-variedad",[auth.verifyAdmin,path],variedadController.update);
+router.delete("/delete-variedad/:id",[auth.verifyAdmin,path],variedadController.delete);
+
+
 
 export default router;
