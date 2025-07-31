@@ -65,7 +65,6 @@ export class ProductService {
 
   // Variedad
 
-  
   createVariedad(data){
     this.isLoadingSubject.next(true);
     let headers = new HttpHeaders({"token": this.authservice.token});
