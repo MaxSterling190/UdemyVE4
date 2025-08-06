@@ -38,7 +38,6 @@ export class ListSliderComponent implements OnInit {
     this.search = "";
     this.allSlider();
   }
-
   openCreate() {
     const modalRef = this.modalService.open(AddNewSliderComponent,{centered: true, size: 'md'});
 
