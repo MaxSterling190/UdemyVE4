@@ -19,6 +19,7 @@ import { FakeAPIService } from './_fake/fake-api.service';
 import { NoticyAlertComponent } from './componets/notifications/noticy-alert/noticy-alert.component';
 import { ToastNotificationsModule } from 'ngx-toast-notifications';
 import { duration } from 'moment';
+import { DatePipe } from '@angular/common';
 // #fake-end#
 
 function appInitializer(authService: AuthService) {
@@ -60,6 +61,7 @@ function appInitializer(authService: AuthService) {
     //   multi: true,
     //   deps: [AuthService],
     // },
+    DatePipe,
     {
       provide: HIGHLIGHT_OPTIONS,
       useValue: {

@@ -4,6 +4,10 @@ import { CategoriesService } from '../../categories/_services/categories.service
 import { ProductService } from '../_services/product.service';
 import { Toast, Toaster } from 'ngx-toast-notifications';
 import { NoticyAlertComponent } from 'src/app/componets/notifications/noticy-alert/noticy-alert.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DeleteNewVariedadComponent } from '../variedades/delete-new-variedad/delete-new-variedad.component';
+import { EditNewVariedadComponent } from '../variedades/edit-new-variedad/edit-new-variedad.component';
+import { DeleteGaleriaImagenComponent } from '../delete-galeria-imagen/delete-galeria-imagen.component';
 
 @Component({
   selector: 'app-edit-new-product',
@@ -25,6 +29,7 @@ export class EditNewProductComponent implements OnInit {
   imagen_previzualizacion:any = null;
   description:any = null;
   resumen:any = null;
+  state:any = 1;
   //
   tag:any = null;
   tags:any = [];
@@ -34,15 +39,20 @@ export class EditNewProductComponent implements OnInit {
   stock:any = 0;
 
   stock_multiple:any = 0;
+
   valor_multiple:any = "";
 
   variedades:any = [];
+  imagen_file_galeria: any = null;
+  imagen_previz_galeria: any = null;
+  galerias:any = [];
   constructor(
     public _productService: ProductService,
     public router: Router,
     public _categorieService:CategoriesService,
     public activeRouter: ActivatedRoute,
     public toaster: Toaster,
+    public modalService: NgbModal,
   ) { }
 
   ngOnInit(): void {
@@ -61,12 +71,17 @@ export class EditNewProductComponent implements OnInit {
       this.price_soles = this.product_selected.price_soles;
       this.price_dollars = this.product_selected.price_dollars;
 
+      this.stock = this.product_selected.stock;
+      
       this.imagen_previzualizacion = this.product_selected.imagen;
       this.description = this.product_selected.description;
       this.resumen = this.product_selected.resumen;
       this.tags = this.product_selected.tags;
+      this.variedades = this.product_selected.variedades;
 
       this.type_inventario = this.product_selected.type_inventario;
+      this.state = this.product_selected.state;
+      this.galerias = this.product_selected.galerias;
     })
     this._categorieService.allCategories().subscribe((resp:any) => {
       console.log(resp);
@@ -92,6 +107,18 @@ export class EditNewProductComponent implements OnInit {
     reader.onloadend = () => this.imagen_previzualizacion = reader.result;
     this.loadServices();
   }
+  processFileGaleria($event){
+    if($event.target.files[0].type.indexOf("image") < 0){
+      this.imagen_previz_galeria = null;
+      this.toaster.open(NoticyAlertComponent, {text: `danger-'Upps! Necesita ingresar un archivo de tipo imagen.'`});
+      return;
+    }
+    this.imagen_file_galeria = $event.target.files[0];
+    let reader = new FileReader();
+    reader.readAsDataURL(this.imagen_file_galeria);
+    reader.onloadend = () => this.imagen_previz_galeria = reader.result;
+    this.loadServices();
+  }
   addTag(){
     this.tags.push(this.tag);
     this.tag = "";
@@ -114,7 +141,11 @@ export class EditNewProductComponent implements OnInit {
     
     formData.append("description", this.description);
     formData.append("resumen", this.resumen);
+    formData.append("state", this.state);
+    formData.append("type_inventario", this.type_inventario);
+
     formData.append("tags", JSON.stringify(this.tags));
+    formData.append("stock", this.stock);
     if (this.imagen_file) {
       formData.append("imagen", this.imagen_file);
     }
@@ -148,10 +179,73 @@ export class EditNewProductComponent implements OnInit {
     }
     this._productService.createVariedad(data).subscribe((resp:any) => {
       console.log(resp);
+      
+      this.valor_multiple = null;
+      this.stock_multiple = null;
+      let index = this.variedades.findIndex(item => item._id == resp.variedad._id);
+      if (index != -1) {
+        this.variedades[index] = resp.variedad;
+        this.toaster.open(NoticyAlertComponent, {text: `primary-'LA VARIEDAD SE EDITO CORRECTAMENTE'`});
+      }else{
+        this.variedades.unshift(resp.variedad);
+        this.toaster.open(NoticyAlertComponent, {text: `primary-'LA VARIEDAD SE REGISTRO CORRECTAMENTE'`});
+      } 
     })
   }
-  editVariedad(product){
+  editVariedad(variedad){
+  const modalRef = this.modalService.open(EditNewVariedadComponent,{centered: true, size: 'sm'});
+    modalRef.componentInstance.variedad = variedad;
+
+    modalRef.componentInstance.VariedadE.subscribe((variedadE:any) => {
+      let index = this.variedades.findIndex(item => item._id == variedad._id);
+      if (index != -1) {
+        this.variedades[index] = variedadE;
+        this.toaster.open(NoticyAlertComponent, {text: `primary-'LA VARIEDAD SE EDITO CORRECTAMENTE'`});
+      }
+    })
   }
-  deleteVariedad(product){
+  deleteVariedad(variedad){
+  const modalRef = this.modalService.open(DeleteNewVariedadComponent,{centered: true, size: 'sm'});
+    modalRef.componentInstance.variedad = variedad;
+
+    modalRef.componentInstance.VariedadD.subscribe((resp:any) => {
+      let index = this.variedades.findIndex(item => item._id == variedad._id);
+      if (index != -1) {
+        this.variedades.splice(index, 1);
+        this.toaster.open(NoticyAlertComponent, {text: `primary-'LA VARIEDAD SE ELIMINO CORRECTAMENTE'`});
+      }
+    })
+  }
+
+  storeImagen(){
+    if (!this.imagen_file_galeria){
+      this.toaster.open(NoticyAlertComponent, {text: `danger-'NECESITAS SELECCIONAR UNA IMAGEN'`});
+      return;
+    }
+    let formData = new FormData();
+    formData.append("_id", this.product_id);
+    formData.append("imagen", this.imagen_file_galeria);
+    formData.append("__id", new Date().getTime().toString());
+    this._productService.createGaleria(formData).subscribe((resp:any) => {
+      console.log(resp);
+      this.imagen_file_galeria = null;
+      this.imagen_previz_galeria = null;
+      this.galerias.unshift(resp.imagen);
+    })
+  }
+
+
+  removeImagen(imagen){
+    const modalRef = this.modalService.open(DeleteGaleriaImagenComponent,{centered: true, size: 'sm'});
+    modalRef.componentInstance.imagen = imagen;
+    modalRef.componentInstance.product_id = this.product_id;
+
+    modalRef.componentInstance.ImagenD.subscribe((resp:any) => {
+      let index = this.galerias.findIndex(item => item._id == imagen._id);
+      if (index != -1) {
+        this.galerias.splice(index, 1);
+        this.toaster.open(NoticyAlertComponent, {text: `primary-'LA IMAGEN SE ELIMINO CORRECTAMENTE'`});
+      }
+    })
   }
 }

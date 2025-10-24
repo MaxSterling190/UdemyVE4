@@ -26,7 +26,7 @@ export default {
         try {
             if(req.files && req.files.portada){
                 var img_path = req.files.portada.path;
-                var name = img_path.split('\\');
+                var name = img_path.split('/');
                 var portada_name = name[2];
                 // console.log(portada_name)
                 req.body.imagen = portada_name;

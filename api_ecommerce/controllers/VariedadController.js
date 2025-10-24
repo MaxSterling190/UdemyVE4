@@ -4,7 +4,16 @@ export default {
     register: async (req, res) => {
         try {
             let data = req.body;
-            let variedad = await models.Variedad.create(data);
+            let variedad_exits = await models.Variedad.findOne({valor: data.valor, product: data.product});
+            var variedad = null;
+            if (variedad_exits){
+                data.stock = variedad_exits.stock + data.stock;
+                await models.Variedad.findByIdAndUpdate({_id: variedad_exits._id}, data);
+                variedad = await models.Variedad.findById({_id: variedad_exits._id});
+            }else{
+                variedad = await models.Variedad.create(data);
+            }
+
             res.status(200).json({
                 variedad: variedad,
             });
@@ -18,7 +27,8 @@ export default {
     update: async (req, res) => {
         try {
             let data = req.body;
-            let variedad = await models.Variedad.findByIdAndUpdate({_id:data._id},data);
+            await models.Variedad.findByIdAndUpdate({_id:data._id},data);
+            let variedad = await models.Variedad.findById({_id:data._id});
             res.status(200).json({
                 variedad: variedad,
             });
@@ -30,9 +40,10 @@ export default {
         }
     },
     delete: async (req, res) => {
+
         try {
             let _id = req.params.id;
-            await models.Variedad.findByIdAndUpdate({_id:_id});
+            await models.Variedad.findByIdAndDelete({_id:_id});
             res.status(200).json({
                 message: "SE ELIMINO LA VARIEDAD",
             });

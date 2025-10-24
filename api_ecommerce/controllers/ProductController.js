@@ -78,24 +78,27 @@ export default {
     },
     list: async (req, res) => {
         try {
-            var search = req.query.search;
-            var categorie = req.query.categorie;
-            let query = {};
-
-            if (search) {
-            query.title = new RegExp(search, "i");
+            var filter = [];
+            if(req.query.search){
+                filter.push(
+                    {"title": new RegExp(req.query.search, 'i')},
+                );
             }
-            if (categorie) {
-            query.categorie = categorie; // debe ser el _id de la categoría
+            if(req.query.categorie){
+                filter.push(
+                    {"categorie": req.query.categorie}
+                );
             }
-            let products = await models.Product.find(query).populate('categorie');
+            let products = await models.Product.find({
+                $and:filter,
+            }).populate('categorie')
             products = products.map((product) => {
             return resource.Product.product_list(product);
-            });
+            })
 
             res.status(200).json({
                 products: products,
-            });
+            })
         } catch (error) {
             console.error('Error al listar productos:', error);
             res.status(500).send({
@@ -105,7 +108,7 @@ export default {
     },
     remove: async (req, res) => {
         try {
-            let _id = req.params._id;
+            let _id = req.query._id;
             await models.Product.findByIdAndDelete({_id: _id});
 
             res.status(200).json({
@@ -163,16 +166,15 @@ export default {
                 $push: {
                     galerias: {
                         imagen: imagen_name,
-                        _id: req.body._id
+                        _id: req.body.__id
                     }
                 }
             })
             res.status(500).json({
                 message: "LA IMAGEN SE SUBIO PERFECTAMENTE",
                 imagen: {
-                    imagen: imagen_name,
-                    imagen_path: 'http://localhost:3000/'+'/uploads/product/'+imagen_name,
-                    _id: req.body._id
+                    imagen: 'http://localhost:3000/'+'/api/products/uploads/product/'+imagen_name,
+                    _id: req.body.__id
                 }
             });
         } catch (error) {
@@ -187,7 +189,7 @@ export default {
             await models.Product.findByIdAndUpdate({_id: req.body._id}, {
                 $pull: {
                     galerias: {
-                        _id: req.body._id
+                        _id: req.body.__id
                     }
                 }
             });

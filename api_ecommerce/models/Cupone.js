@@ -7,12 +7,13 @@ const CuponeSchema = new Schema({
     type_count : {type: Number,required:true,default: 1}, // limitado 1 o limitado 2
     num_use: {type: Number,required:false},
     type_segment: {type: Number,required:false,default: 1}, // 1 es cupon por producto y 2 seria por categoria
-    products: [{type:Number}],
-    categories: [{type:Number}] 
+    state: {type: Number,required:false,default: 1}, // 1 activo 2 inactivo
+    products: [{type:Object}], // [{_id: asdsdas},{_id: asdggdas}]
+    categories: [{type:Object}] 
 },{
     timestamps: true,
 })
 
-const Cupone = mongoose.model("Cupones",CuponeSchema);
+const Cupone = mongoose.model("cupones",CuponeSchema);
 export default Cupone;
 

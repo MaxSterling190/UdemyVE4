@@ -20,10 +20,19 @@ export class ProductService {
     this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     this.isLoading$ = this.isLoadingSubject.asObservable();
   }
-  allProducts(search='') {
+  allProducts(search='', categorie=null) {
     this.isLoadingSubject.next(true);
     let headers = new HttpHeaders({"token": this.authservice.token});
-    let URL = URL_SERVICIOS+'/products/list?search='+search;
+    let LINK = "";
+    if(search){
+      LINK += "?search="+search
+    }else{
+      LINK += "?search=";
+    }
+    if (categorie) {
+      LINK += "&categorie="+categorie;
+    }
+    let URL = URL_SERVICIOS+'/products/list'+LINK;
     return this.http.get(URL, {headers: headers}).pipe(
       finalize(() => this.isLoadingSubject.next(false))
     );
@@ -59,6 +68,24 @@ export class ProductService {
     let headers = new HttpHeaders({"token": this.authservice.token});
     let URL = URL_SERVICIOS+'/products/delete?_id='+product_id;
     return this.http.delete(URL,{headers: headers}).pipe(
+      finalize(() => this.isLoadingSubject.next(false))
+    );
+  }
+  // Galeria
+
+  createGaleria(data){
+    this.isLoadingSubject.next(true);
+    let headers = new HttpHeaders({"token": this.authservice.token});
+    let URL = URL_SERVICIOS+'/products/register_imagen';
+    return this.http.post(URL, data, {headers: headers}).pipe(
+      finalize(() => this.isLoadingSubject.next(false))
+    );
+  }
+  deleteGaleria(data){
+    this.isLoadingSubject.next(true);
+    let headers = new HttpHeaders({"token": this.authservice.token});
+    let URL = URL_SERVICIOS+'/products/remove_image';
+    return this.http.post(URL,data,{headers: headers}).pipe(
       finalize(() => this.isLoadingSubject.next(false))
     );
   }

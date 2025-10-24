@@ -33,7 +33,7 @@ export class EditNewSliderComponent implements OnInit {
     this.name = this.slider_selected.title;
     this.link = this.slider_selected.link;
     this.state = this.slider_selected.state;
-    this.imagen_previzualizacion = URL_BACKEND+'api/sliders/uploads/sliders/'+this.slider_selected.imagen;
+    this.imagen_previzualizacion = URL_BACKEND+'api/sliders/uploads/slider/'+this.slider_selected.imagen;
   }
 
   processFile($event){
